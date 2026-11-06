@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MP Eyewear – Clientes</title>
+<style>
+:root{--ouro:#c9a227;--ouro2:#a4841c;--fundo:#f4f4f4;--card:#fff;--texto:#111;--suave:#666;--borda:#dcdcdc;
+  --verm-bg:#fde8e8;--verm:#b42318;--amar-bg:#fff6d6;--amar:#8a5a00;--raio:10px;color-scheme:light}
+:root[data-theme=dark]{--ouro:#d4af37;--ouro2:#e6c458;--fundo:#0b0b0b;--card:#171717;--texto:#f2f2f2;--suave:#a3a3a3;--borda:#2e2e2e;
+  --verm-bg:#4a1d22;--verm:#ffb4ab;--amar-bg:#4a3b12;--amar:#ffd98a;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--fundo);color:var(--texto);line-height:1.45}
+.oculto{display:none!important}
+button{font:inherit;cursor:pointer;border:0;border-radius:var(--raio);padding:.6rem 1rem;transition:background .15s}
+.btn{background:var(--ouro);color:#111;font-weight:600}.btn:hover{background:var(--ouro2)}
+.sec{background:transparent;color:var(--texto);border:1px solid var(--ouro)}.sec:hover{background:var(--ouro);color:#111}
+.peri{background:transparent;color:var(--verm);border:1px solid var(--verm)}.peri:hover{background:var(--verm);color:var(--card)}
+.peq{padding:.35rem .7rem;font-size:.85rem}
+button:disabled{opacity:.45;pointer-events:none}
+label{display:block;font-size:.9rem;font-weight:600;margin:.8rem 0 .3rem}
+input,select{width:100%;font:inherit;color:var(--texto);background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);padding:.6rem .75rem}
+:focus-visible{outline:2px solid var(--ouro);outline-offset:2px}
+.erro{color:var(--verm);font-size:.85rem;min-height:1.1em;margin:.5rem 0 0}
+.ok{color:var(--texto);font-size:.85rem}
+/* login */
+#telaLogin{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+.cartao{background:var(--card);border:1px solid var(--borda);border-radius:16px;padding:2rem;width:100%;max-width:400px}
+.cartao h1{margin:0 0 .4rem;font-size:1.5rem;letter-spacing:.04em;display:inline-block;border-bottom:3px solid var(--ouro)}
+.cartao .btn{width:100%;margin-top:1rem}
+.links{text-align:center;font-size:.9rem;margin:1rem 0 0}
+.links a{color:var(--texto);font-weight:600;cursor:pointer;text-decoration:underline var(--ouro) 2px;text-underline-offset:3px;margin:0 .4rem}
+/* principal */
+header{background:#000;color:#fff;border-bottom:3px solid var(--ouro);display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;justify-content:space-between;padding:.8rem 1.25rem}
+header h1{margin:0;font-size:1.25rem;letter-spacing:.06em}
+header button{background:rgba(255,255,255,.15);color:#fff}header button:hover{background:rgba(255,255,255,.3)}
+main{max-width:1150px;margin:0 auto;padding:1.25rem}
+.barra{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem}
+.barra>*{flex:1 1 170px}.barra .fixo{flex:0 0 auto}
+.tabela{background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:900px}
+th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--borda);vertical-align:middle}
+th{background:var(--fundo);font-size:.85rem;color:var(--suave)}
+tr:last-child td{border-bottom:0}
+tr.venc td{background:var(--verm-bg)}tr.alerta td{background:var(--amar-bg)}
+.selo{font-size:.75rem;font-weight:600;border:1px solid;border-radius:99px;padding:.1rem .5rem;margin-left:.4rem}
+.venc .selo{color:var(--verm)}.alerta .selo{color:var(--amar)}
+table input[type=checkbox]{width:18px;height:18px;padding:0;accent-color:var(--ouro)}
+.mini{width:46px;height:46px;object-fit:cover;border-radius:8px;border:1px solid var(--borda);cursor:zoom-in;margin-right:.3rem}
+.acoes{display:flex;gap:.4rem}.vazio{text-align:center;color:var(--suave);padding:2rem}
+/* modais */
+.fundo{position:fixed;inset:0;background:rgba(10,20,40,.55);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:10}
+.modal{background:var(--card);border-radius:16px;padding:1.5rem;width:100%;max-width:460px;max-height:92vh;overflow-y:auto}
+.modal h2{margin:0 0 .5rem}.rodape{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1.2rem}
+.previas{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.6rem}.previas div{position:relative}
+.previas img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--borda);display:block}
+.previas button{position:absolute;top:-7px;right:-7px;width:22px;height:22px;padding:0;border-radius:50%;background:#000;color:#fff}
+#grande{max-width:min(92vw,900px);max-height:88vh;border-radius:10px;background:#fff}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN / CADASTRO / ESQUECI A SENHA (um formulário, vários modos) ===== -->
+<section id="telaLogin">
+  <form class="cartao" id="formAuth" novalidate>
+    <h1>MP Eyewear</h1>
+    <p id="subtitulo" style="margin:.2rem 0 0;color:var(--suave)"></p>
+    <div data-campo="nome"><label for="aNome">Nome</label><input id="aNome" autocomplete="name"></div>
+    <div data-campo="email"><label for="aEmail">E-mail</label><input id="aEmail" type="email" autocomplete="email"></div>
+    <div data-campo="senha"><label for="aSenha">Senha</label><input id="aSenha" type="password" autocomplete="current-password"></div>
+    <div data-campo="conf"><label for="aConf">Confirmar senha</label><input id="aConf" type="password" autocomplete="new-password"></div>
+    <p class="erro" id="msgAuth" role="alert"></p>
+    <button class="btn" id="btnAuth" type="submit"></button>
+    <p class="links" id="linksAuth"></p>
+  </form>
+</section>
+
+<!-- ===== TELA PRINCIPAL ===== -->
+<section id="telaPrincipal" class="oculto">
+  <header>
+    <h1>MP Eyewear</h1>
+    <div style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap">
+      <span id="usuario" style="font-size:.9rem"></span>
+      <button id="btnTema" type="button">Modo escuro</button>
+      <button id="btnSair" type="button">Sair</button>
+    </div>
+  </header>
+  <main>
+    <div class="barra">
+      <div><label for="busca" style="margin-top:0">Buscar</label><input id="busca" type="search" placeholder="Nome, CPF ou OS"></div>
+      <div><label for="filtroDias" style="margin-top:0">Vence em até (dias)</label><input id="filtroDias" type="number" min="0" placeholder="Ex.: 30"></div>
+      <div><label for="ordem" style="margin-top:0">Ordenar por</label>
+        <select id="ordem"><option value="venc">Vencimento mais próximo</option><option value="az">Ordem alfabética (A–Z)</option>
+        <option value="novos">Adicionados por último</option><option value="antigos">Adicionados primeiro</option></select></div>
+      <button class="sec fixo" id="btnExportar" disabled>Exportar</button>
+      <button class="btn fixo" id="btnAdicionar">Adicionar cliente</button>
+    </div>
+    <div class="tabela"><table>
+      <thead><tr><th><input type="checkbox" id="selTodos" aria-label="Selecionar todos"></th><th>Nome</th><th>CPF</th>
+        <th>Data do cadastro</th><th>Vencimento do exame</th><th>Fotos do exame</th><th>OS</th><th>Ações</th></tr></thead>
+      <tbody id="corpo"></tbody>
+    </table></div>
+  </main>
+</section>
+
+<!-- ===== MODAL: CLIENTE ===== -->
+<div class="fundo oculto" id="modalCliente">
+  <form class="modal" id="formCliente" novalidate>
+    <h2 id="tituloModal"></h2>
+    <label for="cNome">Nome do cliente</label><input id="cNome">
+    <label for="cCpf">CPF</label><input id="cCpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off">
+    <label for="cCad">Data do cadastro</label><input id="cCad" type="date">
+    <label for="cVenc">Vencimento do exame</label><input id="cVenc" type="date">
+    <label for="cOS">Número da OS</label><input id="cOS">
+    <label for="cFoto">Fotos do exame (pode escolher várias)</label>
+    <input id="cFoto" type="file" accept="image/*" multiple>
+    <div class="previas" id="previas"></div>
+    <p class="erro" id="erroCli" role="alert"></p>
+    <div class="rodape"><button type="button" class="sec" id="btnCancelar">Cancelar</button><button class="btn" id="btnSalvar" type="submit">Salvar cliente</button></div>
+  </form>
+</div>
+<div class="fundo oculto" id="modalFoto"><img id="grande" alt="Foto do exame ampliada"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+/* =====================================================
+   MP Eyewear – cadastro de clientes (versão Supabase)
+   Contas e clientes ficam no Supabase: qualquer aparelho acessa os mesmos dados.
+   ===================================================== */
+
+// >>> PREENCHA com os dados do seu projeto (Supabase > Project Settings > API) <<<
+const SUPABASE_URL = 'https://rvwpvpcsftwwqekfwubd.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_2FB_zI4H00nLcIdecmOvKA_EBETTFGp';   // nunca use a chave "service_role" aqui
+const configurado = !SUPABASE_URL.startsWith('COLE_') && !SUPABASE_KEY.startsWith('COLE_');
+const sb = configurado ? supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+const $ = (id) => document.getElementById(id);
+const esc = (t) => { const d = document.createElement('div'); d.textContent = t ?? ''; return d.innerHTML.replace(/"/g, '&quot;'); };
+const hoje = () => { const d = new Date(); return new Date(d - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); };
+const fmt = (iso) => iso ? iso.split('-').reverse().join('/') : '—';
+const diasAte = (iso) => Math.round((new Date(iso + 'T00:00:00') - new Date(hoje() + 'T00:00:00')) / 86400000);
+const emailOk = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+
+// ---------- Tema claro/escuro ----------
+function tema(t) { document.documentElement.dataset.theme = t; $('btnTema').textContent = t === 'dark' ? 'Modo claro' : 'Modo escuro'; }
+$('btnTema').onclick = () => { const t = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; tema(t); try { localStorage.setItem('tema', t); } catch {} };
+try { tema(localStorage.getItem('tema') || 'light'); } catch { tema('light'); }
+
+// ---------- CPF ----------
+function mascaraCPF(v) {
+  const d = v.replace(/\D/g, '').slice(0, 11);
+  return d.replace(/^(\d{3})(\d)/, '$1.$2').replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3').replace(/\.(\d{3})(\d)/, '.$1-$2');
+}
+function cpfValido(cpf) {
+  const d = cpf.replace(/\D/g, '');
+  if (d.length !== 11 || /^(\d)\1{10}$/.test(d)) return false;
+  const dig = (n) => { let s = 0; for (let i = 0; i < n; i++) s += +d[i] * (n + 1 - i); const r = (s * 10) % 11; return r === 10 ? 0 : r; };
+  return dig(9) === +d[9] && dig(10) === +d[10];
+}
+$('cCpf').oninput = (e) => { e.target.value = mascaraCPF(e.target.value); };
+
+/* ================= AUTENTICAÇÃO (Supabase Auth) ================= */
+const MODOS = {
+  login:    { sub: 'Entre para acessar seus clientes.', botao: 'Entrar', campos: ['email', 'senha'],
+              links: [['Criar conta', 'cadastro'], ['Esqueci minha senha', 'recuperar']] },
+  cadastro: { sub: 'Crie sua conta.', botao: 'Criar conta', campos: ['nome', 'email', 'senha', 'conf'], links: [['Voltar ao login', 'login']] },
+  recuperar:{ sub: 'Enviaremos um link para o seu e-mail.', botao: 'Enviar link por e-mail', campos: ['email'], links: [['Voltar ao login', 'login']] },
+  nova:     { sub: 'Escolha a nova senha.', botao: 'Salvar nova senha', campos: ['senha', 'conf'], links: [] }
+};
+let modo = 'login';
+function irModo(m) {
+  modo = m; const cfg = MODOS[m];
+  $('subtitulo').textContent = cfg.sub; $('btnAuth').textContent = cfg.botao; $('msgAuth').textContent = '';
+  document.querySelectorAll('[data-campo]').forEach(el => el.classList.toggle('oculto', !cfg.campos.includes(el.dataset.campo)));
+  $('linksAuth').innerHTML = cfg.links.map(([t, d]) => `<a data-modo="${d}" tabindex="0" role="button">${t}</a>`).join(' ');
+}
+$('linksAuth').onclick = (e) => { if (e.target.dataset.modo) irModo(e.target.dataset.modo); };
+$('linksAuth').onkeydown = (e) => { if (e.key === 'Enter' && e.target.dataset.modo) irModo(e.target.dataset.modo); };
+
+$('formAuth').onsubmit = async (e) => {
+  e.preventDefault();
+  const msg = $('msgAuth'), nome = $('aNome').value.trim(), email = $('aEmail').value.trim().toLowerCase();
+  const senha = $('aSenha').value, conf = $('aConf').value, c = MODOS[modo].campos;
+  msg.className = 'erro';
+  if (!sb) return msg.textContent = 'Configure SUPABASE_URL e SUPABASE_KEY no início do código.';
+  if (c.includes('nome') && nome.length < 2) return msg.textContent = 'Informe seu nome.';
+  if (c.includes('email') && !emailOk(email)) return msg.textContent = 'Informe um e-mail válido.';
+  if (c.includes('senha') && (modo === 'login' ? !senha : senha.length < 6)) return msg.textContent = modo === 'login' ? 'Informe a senha.' : 'A senha deve ter pelo menos 6 caracteres.';
+  if (c.includes('conf') && senha !== conf) return msg.textContent = 'As senhas não conferem.';
+  $('btnAuth').disabled = true;
+  let erro, aviso = '';
+  if (modo === 'login') ({ error: erro } = await sb.auth.signInWithPassword({ email, password: senha }));
+  else if (modo === 'cadastro') {
+    const r = await sb.auth.signUp({ email, password: senha, options: { data: { nome } } });
+    erro = r.error; if (!erro && !r.data.session) aviso = 'Conta criada! Confirme pelo link enviado ao seu e-mail e depois entre.';
+  } else if (modo === 'recuperar') {
+    ({ error: erro } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.href.split('#')[0] }));
+    if (!erro) aviso = 'Se o e-mail estiver cadastrado, o link de redefinição foi enviado.';
+  } else {   // nova senha (vindo do link do e-mail)
+    ({ error: erro } = await sb.auth.updateUser({ password: senha }));
+    if (!erro) aviso = 'Senha alterada!';
+  }
+  $('btnAuth').disabled = false;
+  if (erro) return msg.textContent = erro.message.includes('Invalid login') ? 'E-mail ou senha incorretos.' : 'Erro: ' + erro.message;
+  if (aviso) { if (modo === 'nova') { const { data } = await sb.auth.getSession(); if (data.session) entrar(data.session.user); } else { irModo('login'); } msg.className = 'ok'; msg.textContent = aviso; }
+};
+
+// Reage a login, logout e ao link de redefinição vindo do e-mail
+if (sb) sb.auth.onAuthStateChange((evento, sessao) => {
+  if (evento === 'PASSWORD_RECOVERY') { irModo('nova'); return; }
+  if (sessao && modo !== 'nova') entrar(sessao.user); else if (!sessao) sairTela();
+});
+$('btnSair').onclick = () => sb.auth.signOut();
+function sairTela() { $('telaPrincipal').classList.add('oculto'); $('telaLogin').classList.remove('oculto'); clientes = []; sel.clear(); irModo('login'); }
+function entrar(user) {
+  $('telaLogin').classList.add('oculto'); $('telaPrincipal').classList.remove('oculto');
+  $('usuario').textContent = 'Olá, ' + ((user.user_metadata && user.user_metadata.nome) || user.email);
+  carregar();
+}
+
+/* ================= CLIENTES (tabela "clientes" no Supabase) ================= */
+let clientes = [], visiveis = [], sel = new Set(), editId = null, fotos = [];
+const MAX_FOTOS = 8;
+
+async function carregar() {
+  const { data, error } = await sb.from('clientes').select('*').order('criado_em', { ascending: true });
+  if (error) { $('corpo').innerHTML = `<tr><td colspan="8" class="vazio">Erro ao carregar: ${esc(error.message)}</td></tr>`; return; }
+  clientes = data; desenhar();
+}
+
+function desenhar() {
+  const termo = $('busca').value.trim().toLowerCase(), dig = termo.replace(/\D/g, '');
+  const lim = $('filtroDias').value === '' ? null : Number($('filtroDias').value), ordem = $('ordem').value;
+  const lista = clientes.filter(c =>
+    (c.nome.toLowerCase().includes(termo) || (c.os || '').toLowerCase().includes(termo) || (dig && (c.cpf || '').replace(/\D/g, '').includes(dig))) &&
+    (lim === null || diasAte(c.vencimento) <= lim));
+  if (ordem === 'venc') lista.sort((a, b) => a.vencimento.localeCompare(b.vencimento));
+  else if (ordem === 'az') lista.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR', { sensitivity: 'base' }));
+  else if (ordem === 'novos') lista.reverse();
+  visiveis = lista;
+  sel = new Set(lista.filter(c => sel.has(c.id)).map(c => c.id));   // só mantém marcados os que continuam visíveis
+  atualizaSel();
+  if (!lista.length) { $('corpo').innerHTML = `<tr><td colspan="8" class="vazio">${clientes.length ? 'Nenhum cliente encontrado.' : 'Nenhum cliente cadastrado. Clique em “Adicionar cliente”.'}</td></tr>`; return; }
+  $('corpo').innerHTML = lista.map(c => {
+    const d = diasAte(c.vencimento); let cl = '', selo = '';
+    if (d < 0) { cl = 'venc'; selo = '<span class="selo">Vencido</span>'; }
+    else if (d <= 30) { cl = 'alerta'; selo = `<span class="selo">${d === 0 ? 'Vence hoje' : 'Vence em ' + d + 'd'}</span>`; }
+    const fs = (c.fotos || []).map((f, i) => i < 3 ? `<img class="mini" src="${f}" alt="Exame ${i + 1}" data-ver="${c.id}" data-i="${i}">` : '').join('') +
+      ((c.fotos || []).length > 3 ? `+${c.fotos.length - 3}` : '') || '—';
+    return `<tr class="${cl}"><td><input type="checkbox" data-sel="${c.id}" ${sel.has(c.id) ? 'checked' : ''} aria-label="Selecionar"></td>
+      <td>${esc(c.nome)}</td><td>${esc(c.cpf || '—')}</td><td>${fmt(c.data_cadastro)}</td><td>${fmt(c.vencimento)}${selo}</td><td>${fs}</td><td>${esc(c.os)}</td>
+      <td><div class="acoes"><button class="sec peq" data-edit="${c.id}">Editar</button><button class="peri peq" data-del="${c.id}">Excluir</button></div></td></tr>`;
+  }).join('');
+}
+['busca', 'filtroDias'].forEach(i => $(i).oninput = desenhar); $('ordem').onchange = desenhar;
+
+$('corpo').onclick = async (e) => {
+  const d = e.target.dataset;
+  if (d.sel) { e.target.checked ? sel.add(d.sel) : sel.delete(d.sel); atualizaSel(); }
+  if (d.edit) abrir(d.edit);
+  if (d.ver) { $('grande').src = clientes.find(c => c.id === d.ver).fotos[+d.i]; $('modalFoto').classList.remove('oculto'); }
+  if (d.del) {
+    const c = clientes.find(x => x.id === d.del);
+    if (c && window.confirm(`Excluir o cliente ${c.nome}?`)) {
+      const { error } = await sb.from('clientes').delete().eq('id', c.id);
+      if (error) window.alert('Não foi possível excluir: ' + error.message); else carregar();
+    }
+  }
+};
+$('modalFoto').onclick = () => $('modalFoto').classList.add('oculto');
+
+// ----- seleção e exportação (CSV: abre no Excel e no Google Planilhas) -----
+function atualizaSel() {
+  $('btnExportar').disabled = !sel.size;
+  $('btnExportar').textContent = sel.size ? `Exportar (${sel.size})` : 'Exportar';
+  $('selTodos').checked = visiveis.length > 0 && sel.size === visiveis.length;
+}
+$('selTodos').onchange = (e) => { sel = new Set(e.target.checked ? visiveis.map(c => c.id) : []); desenhar(); };
+$('btnExportar').onclick = () => {
+  const campo = (v) => { let t = String(v ?? ''); if (/^[=+\-@]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"'; };
+  const sit = (iso) => { const d = diasAte(iso); return d < 0 ? 'Vencido' : d <= 30 ? `Vence em ${d} dias` : 'Em dia'; };
+  const linhas = [['Nome', 'CPF', 'Data do cadastro', 'Vencimento do exame', 'Situação', 'Número da OS'],
+    ...visiveis.filter(c => sel.has(c.id)).map(c => [c.nome, c.cpf || '', fmt(c.data_cadastro), fmt(c.vencimento), sit(c.vencimento), c.os])];
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob(['\uFEFF' + linhas.map(l => l.map(campo).join(';')).join('\r\n')], { type: 'text/csv;charset=utf-8' }));
+  a.download = `clientes-mp-eyewear-${hoje()}.csv`; a.click(); URL.revokeObjectURL(a.href);
+};
+
+// ----- formulário de cliente -----
+function abrir(id) {
+  editId = id || null; const c = id ? clientes.find(x => x.id === id) : null;
+  $('tituloModal').textContent = c ? 'Editar cliente' : 'Adicionar cliente';
+  $('cNome').value = c ? c.nome : ''; $('cCpf').value = c ? c.cpf || '' : ''; $('cCad').value = c ? c.data_cadastro : hoje();
+  $('cVenc').value = c ? c.vencimento : ''; $('cOS').value = c ? c.os : ''; $('cFoto').value = '';
+  fotos = c ? [...(c.fotos || [])] : []; previas(); $('erroCli').textContent = '';
+  $('modalCliente').classList.remove('oculto'); $('cNome').focus();
+}
+const fechar = () => $('modalCliente').classList.add('oculto');
+$('btnAdicionar').onclick = () => abrir(); $('btnCancelar').onclick = fechar;
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { fechar(); $('modalFoto').classList.add('oculto'); } });
+
+function previas() {
+  $('previas').innerHTML = fotos.map((f, i) => `<div><img src="${f}" alt="Foto ${i + 1}"><button type="button" data-rem="${i}" aria-label="Remover foto ${i + 1}">×</button></div>`).join('');
+}
+$('previas').onclick = (e) => { if (e.target.dataset.rem !== undefined) { fotos.splice(+e.target.dataset.rem, 1); previas(); } };
+
+// Reduz cada imagem (máx. 900 px, JPEG) antes de guardar, para economizar espaço do banco
+$('cFoto').onchange = (e) => {
+  [...e.target.files].forEach(arq => {
+    if (!arq.type.startsWith('image/')) return;
+    const leitor = new FileReader();
+    leitor.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        if (fotos.length >= MAX_FOTOS) { $('erroCli').textContent = `Máximo de ${MAX_FOTOS} fotos por cliente.`; return; }
+        const k = Math.min(1, 900 / Math.max(img.width, img.height)), cv = document.createElement('canvas');
+        cv.width = img.width * k; cv.height = img.height * k;
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        fotos.push(cv.toDataURL('image/jpeg', 0.7)); previas();
+      };
+      img.src = leitor.result;
+    };
+    leitor.readAsDataURL(arq);
+  });
+  e.target.value = '';
+};
+
+$('formCliente').onsubmit = async (e) => {
+  e.preventDefault();
+  const dados = { nome: $('cNome').value.trim(), cpf: $('cCpf').value.trim() || null, data_cadastro: $('cCad').value,
+    vencimento: $('cVenc').value, os: $('cOS').value.trim(), fotos }, erro = $('erroCli');
+  if (!dados.nome) return erro.textContent = 'Informe o nome do cliente.';
+  if (dados.cpf && !cpfValido(dados.cpf)) return erro.textContent = 'CPF inválido. Confira os números.';
+  if (!dados.data_cadastro) return erro.textContent = 'Informe a data do cadastro.';
+  if (!dados.vencimento) return erro.textContent = 'Informe o vencimento do exame.';
+  if (!dados.os) return erro.textContent = 'Informe o número da OS.';
+  $('btnSalvar').disabled = true;
+  const { error } = editId ? await sb.from('clientes').update(dados).eq('id', editId) : await sb.from('clientes').insert(dados);
+  $('btnSalvar').disabled = false;
+  if (error) return erro.textContent = 'Não foi possível salvar: ' + error.message;
+  fechar(); carregar();
+};
+
+irModo('login');
+if (!configurado) { $('msgAuth').textContent = 'Falta configurar SUPABASE_URL e SUPABASE_KEY (veja o LEIA-ME).'; }
+</script>
+</body>
+</html>
