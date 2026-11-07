@@ -132,7 +132,7 @@ body.sem-exp th:first-child,body.sem-exp td:first-child:not(.vazio){display:none
     <div class="tabela"><table style="min-width:640px"><thead><tr><th>Pessoa</th><th>Função</th><th>Conta criada</th><th>Último acesso</th><th>Ativa</th></tr></thead><tbody id="corpoEquipe"></tbody></table></div>
     <h3>Convites pendentes</h3><div id="listaConvites" style="font-size:.9rem"></div>
     <h3>Convidar pessoa</h3>
-    <p style="margin:.2rem 0 .6rem;font-size:.85rem;color:var(--suave)">A pessoa cria a conta na tela de login usando exatamente este e-mail e entra na equipe com a função escolhida.</p>
+    <p style="margin:.2rem 0 .6rem;font-size:.85rem;color:var(--suave)">Pode ser qualquer e-mail. Se a pessoa ainda não tem conta, ela cria uma na tela de login com exatamente este e-mail e entra na equipe. Se já tem conta, recebe o convite ao entrar e escolhe aceitar ou recusar.</p>
     <div style="display:flex;gap:.6rem;flex-wrap:wrap"><input id="cvEmail" type="email" placeholder="e-mail da pessoa" style="flex:2 1 220px"><select id="cvFuncao" style="flex:1 1 160px"></select><button class="btn" id="btnConvidar" type="button">Convidar</button></div>
     <p class="erro" id="erroEquipe" role="alert"></p>
     <h3>O que cada função pode fazer</h3><ul id="descFuncoes"></ul>
@@ -253,6 +253,18 @@ function aplicarPermissoes() {
   $('btnEquipe').classList.toggle('oculto', !pode('equipe'));
   document.body.classList.toggle('sem-exp', !pode('exportar'));
 }
+// Convite pendente para quem já tinha conta: a pessoa escolhe aceitar ou recusar ao entrar
+async function verConvite() {
+  const { data } = await sb.rpc('meu_convite'); const c = data && data[0];
+  if (!c) return false;
+  const f = FUNCOES[c.funcao] ? FUNCOES[c.funcao].nome : c.funcao;
+  if (window.confirm(`${c.equipe_nome} convidou você para a equipe como ${f}.\n\nAo aceitar, os seus clientes passam a fazer parte dessa equipe e você deixa de ser conta principal.\n\nAceitar o convite?`)) {
+    const { error } = await sb.rpc('aceitar_convite');
+    if (error) { window.alert('Não foi possível aceitar: ' + error.message); return false; }
+    return true;
+  }
+  await sb.rpc('recusar_convite'); return false;
+}
 let entrando = false;
 async function entrar(user) {
   if (entrando) return; entrando = true;
@@ -272,6 +284,7 @@ async function entrar2(user) {
     setTimeout(() => { $('msgAuth').textContent = data ? 'Esta conta foi desativada pelo administrador.' : 'Perfil não encontrado. Rode o schema_equipe.sql no Supabase.'; }, 300);
     return;
   }
+  if (await verConvite()) ({ data } = await sb.from('perfis').select('*').eq('id', user.id).maybeSingle());   // aceitou: recarrega a função
   perfil = data;
   $('telaLogin').classList.add('oculto'); $('telaPrincipal').classList.remove('oculto');
   $('usuario').textContent = `Olá, ${data.nome || user.email} (${FUNCOES[data.funcao].nome})`;
