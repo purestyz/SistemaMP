@@ -40,7 +40,7 @@ main{max-width:1150px;margin:0 auto;padding:1.25rem}
 .barra{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1rem}
 .barra>*{flex:1 1 170px}.barra .fixo{flex:0 0 auto}
 .tabela{background:var(--card);border:1px solid var(--borda);border-radius:var(--raio);overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:900px}
+table{width:100%;border-collapse:collapse;min-width:1050px}
 th,td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--borda);vertical-align:middle}
 th{background:var(--fundo);font-size:.85rem;color:var(--suave)}
 tr:last-child td{border-bottom:0}
@@ -58,6 +58,7 @@ table input[type=checkbox]{width:18px;height:18px;padding:0;accent-color:var(--o
 .previas img{width:84px;height:84px;object-fit:cover;border-radius:8px;border:1px solid var(--borda);display:block}
 .previas button{position:absolute;top:-7px;right:-7px;width:22px;height:22px;padding:0;border-radius:50%;background:#000;color:#fff}
 #grande{max-width:min(92vw,900px);max-height:88vh;border-radius:10px;background:#fff}
+body.sem-aud .col-aud{display:none}
 body.sem-exp th:first-child,body.sem-exp td:first-child:not(.vazio){display:none}
 .modal small{color:var(--suave)}.modal h3{margin:1.2rem 0 .2rem;font-size:1rem}.modal ul{padding-left:1.1rem;font-size:.9rem;margin:.4rem 0}
 .tag{font-size:.75rem;border:1px solid var(--borda);border-radius:99px;padding:.1rem .5rem;white-space:nowrap}
@@ -102,7 +103,7 @@ body.sem-exp th:first-child,body.sem-exp td:first-child:not(.vazio){display:none
     </div>
     <div class="tabela"><table>
       <thead><tr><th><input type="checkbox" id="selTodos" aria-label="Selecionar todos"></th><th>Nome</th><th>CPF</th>
-        <th>Data do cadastro</th><th>Vencimento do exame</th><th>Fotos do exame</th><th>OS</th><th>Ações</th></tr></thead>
+        <th>Data do cadastro</th><th>Vencimento do exame</th><th>Fotos do exame</th><th>OS</th><th class="col-aud">Última alteração</th><th>Ações</th></tr></thead>
       <tbody id="corpo"></tbody>
     </table></div>
   </main>
@@ -240,10 +241,10 @@ function sairTela() { $('telaPrincipal').classList.add('oculto'); $('telaLogin')
 // Funções e permissões. A segurança de verdade está nas regras do banco (schema_equipe.sql);
 // aqui os botões são escondidos para facilitar o uso.
 const FUNCOES = {
-  principal: { nome: 'Administrador principal', descricao: 'Tudo, incluindo gerenciar a equipe.', adicionar: true, editar: true, excluir: true, exportar: true, equipe: true },
-  admin: { nome: 'Administrador', descricao: 'Faz tudo que o dono faz (ver, adicionar, editar, excluir e exportar clientes), exceto gerenciar a equipe.', adicionar: true, editar: true, excluir: true, exportar: true },
-  atendente: { nome: 'Atendente', descricao: 'Só visualiza e adiciona clientes. Não edita, não exclui e não exporta.', adicionar: true },
-  consulta: { nome: 'Consulta', descricao: 'Só visualiza a lista e as fotos.' }
+  principal: { nome: 'Administrador principal', descricao: 'Tudo, incluindo gerenciar a equipe.', adicionar: true, editar: true, excluir: true, exportar: true, equipe: true, auditoria: true },
+  admin: { nome: 'Administrador', descricao: 'Faz tudo que o dono faz (ver, adicionar, editar, excluir e exportar clientes), exceto gerenciar a equipe.', adicionar: true, editar: true, excluir: true, exportar: true, auditoria: true },
+  atendente: { nome: 'Atendente', descricao: 'Só visualiza e adiciona clientes. Não edita, não exclui e não exporta.', adicionar: true, auditoria: true },
+  consulta: { nome: 'Consulta', descricao: 'Só visualiza a lista e as fotos.', auditoria: true }
 };
 let perfil = null;   // linha da tabela "perfis" de quem está logado
 const pode = (acao) => !!(perfil && perfil.ativo && FUNCOES[perfil.funcao][acao]);
@@ -252,6 +253,7 @@ function aplicarPermissoes() {
   $('btnExportar').classList.toggle('oculto', !pode('exportar'));
   $('btnEquipe').classList.toggle('oculto', !pode('equipe'));
   document.body.classList.toggle('sem-exp', !pode('exportar'));
+  document.body.classList.toggle('sem-aud', !pode('auditoria'));
 }
 // Convite pendente para quem já tinha conta: a pessoa escolhe aceitar ou recusar ao entrar
 async function verConvite() {
@@ -303,6 +305,14 @@ async function carregar() {
   clientes = data; desenhar();
 }
 
+// Quem alterou por último / quem criou (todas as funções veem; vem do banco via schema_auditoria.sql)
+function autoria(c) {
+  if (!c.alterado_em && !c.criado_por_nome) return '—';
+  const quem = c.alterado_por_nome ? esc(c.alterado_por_nome) : '<small>não registrado</small>';
+  return `${quem}<br><small>${dataHora(c.alterado_em || c.criado_em)}</small>` +
+    (c.criado_por_nome ? `<br><small>Criado por ${esc(c.criado_por_nome)}</small>` : '');
+}
+
 function desenhar() {
   const termo = $('busca').value.trim().toLowerCase(), dig = termo.replace(/\D/g, '');
   const lim = $('filtroDias').value === '' ? null : Number($('filtroDias').value), ordem = $('ordem').value;
@@ -324,6 +334,7 @@ function desenhar() {
       ((c.fotos || []).length > 3 ? `+${c.fotos.length - 3}` : '') || '—';
     return `<tr class="${cl}"><td><input type="checkbox" data-sel="${c.id}" ${sel.has(c.id) ? 'checked' : ''} aria-label="Selecionar"></td>
       <td>${esc(c.nome)}</td><td>${esc(c.cpf || '—')}</td><td>${fmt(c.data_cadastro)}</td><td>${fmt(c.vencimento)}${selo}</td><td>${fs}</td><td>${esc(c.os)}</td>
+      <td class="col-aud">${autoria(c)}</td>
       <td><div class="acoes">${pode('editar') ? `<button class="sec peq" data-edit="${c.id}">Editar</button>` : ''}${pode('excluir') ? `<button class="peri peq" data-del="${c.id}">Excluir</button>` : ''}${pode('editar') || pode('excluir') ? '' : '—'}</div></td></tr>`;
   }).join('');
 }
