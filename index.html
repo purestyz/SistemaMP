@@ -194,7 +194,7 @@ body.sem-exp th:first-child,body.sem-exp td:first-child:not(.vazio){display:none
     <label for="cNome">Nome do cliente</label><input id="cNome">
     <label for="cCpf">CPF <small>(opcional)</small></label><input id="cCpf" inputmode="numeric" maxlength="14" placeholder="000.000.000-00" autocomplete="off">
     <label for="cCad">Data do cadastro</label><input id="cCad" type="date">
-    <label for="cVenc">Vencimento do exame</label><input id="cVenc" type="date">
+    <label for="cVenc"></label><input id="cVenc" type="date">
     <label for="cOS">Número da OS</label><input id="cOS">
     <label for="cFoto">Fotos do exame (pode escolher várias)</label>
     <input id="cFoto" type="file" accept="image/*" multiple="">
@@ -444,7 +444,7 @@ $('btnExportar').onclick = () => {
   if (!pode('exportar')) return;
   const campo = (v) => { let t = String(v ?? ''); if (/^[=+\-@]/.test(t)) t = "'" + t; return '"' + t.replace(/"/g, '""') + '"'; };
   const sit = (iso) => { const d = diasAte(iso); return d < 0 ? 'Vencido' : d <= 30 ? `Vence em ${d} dias` : 'Em dia'; };
-  const linhas = [['Nome', 'CPF', 'Data do cadastro', 'Vencimento do exame', 'Situação', 'Número da OS'],
+  const linhas = [['Nome', 'CPF', 'Data do cadastro', 'Data de Renovação', 'Situação', 'Número da OS'],
     ...visiveis.filter(c => sel.has(c.id)).map(c => [c.nome, c.cpf || '', fmt(c.data_cadastro), fmt(c.vencimento), sit(c.vencimento), c.os])];
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob(['\uFEFF' + linhas.map(l => l.map(campo).join(';')).join('\r\n')], { type: 'text/csv;charset=utf-8' }));
@@ -498,7 +498,7 @@ $('formCliente').onsubmit = async (e) => {
   if (!dados.nome) return erro.textContent = 'Informe o nome do cliente.';
   if (dados.cpf && !cpfValido(dados.cpf)) return erro.textContent = 'CPF inválido. Confira os números.';
   if (!dados.data_cadastro) return erro.textContent = 'Informe a data do cadastro.';
-  if (!dados.vencimento) return erro.textContent = 'Informe o vencimento do exame.';
+  if (!dados.vencimento) return erro.textContent = 'Informe a Data de Renovação.';
   if (!dados.os) return erro.textContent = 'Informe o número da OS.';
   $('btnSalvar').disabled = true;
   const { error } = editId ? await sb.from('clientes').update(dados).eq('id', editId) : await sb.from('clientes').insert(dados);
